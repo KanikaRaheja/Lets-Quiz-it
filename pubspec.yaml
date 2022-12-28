@@ -45,6 +45,7 @@ dependencies:
   internet_connection_checker: ^0.0.1+2
   overlay_support: ^1.2.1
   carousel_slider: ^4.0.0
+  confetti: ^0.6.0
 
 dev_dependencies:
   flutter_test:
@@ -70,8 +71,11 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-      - img/kbc.png
-      - img/background.png
+      - assets/img/kbc.png
+      - assets/img/background.png
+      - assets/img/win.png
+      - assets/img/loose.png
+      - assets/img/cheque.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

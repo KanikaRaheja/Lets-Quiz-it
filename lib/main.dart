@@ -1,39 +1,97 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:kbc_quiz/views/questions.dart';
-import 'package:kbc_quiz/views/quizintro.dart';
+import 'package:kbc_quiz/services/localdb.dart';
+// import 'package:kbc_quiz/views/loser.dart';
+// import 'package:kbc_quiz/views/profile.dart';
+// import 'package:kbc_quiz/views/questions.dart';
+// import 'package:kbc_quiz/views/quizintro.dart';
 import 'package:kbc_quiz/views/home.dart';
 import 'package:kbc_quiz/views/login.dart';
+// import 'package:kbc_quiz/views/win.dart';
 import 'package:overlay_support/overlay_support.dart';
+
+// Future<void> main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await Firebase.initializeApp();
+//   runApp(const MyApp());
+// }
+
+// class MyApp extends StatefulWidget {
+//   const MyApp({super.key});
+
+//   // bool isLogIn = false;
+
+//   // getLoggedInState() async{
+//   //   await LocalDB.getUserID().then((value){
+//   //     setState((){
+//   //       isLogIn = value.toString() != "null" ;
+//   //     });
+//   //   });
+//   // }
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     getLoggedInState();
+//   }
+
+//   // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     return OverlaySupport.global(
+//       child: MaterialApp(
+//         debugShowCheckedModeBanner: false,
+//           title: 'Lets Quiz IT',
+//           theme: ThemeData(
+//             primarySwatch: Colors.indigo,
+//           ),
+//           home: Profile()),
+//     );
+//   }
+// }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool isLogIn = false;
+
+  getLoggedInState() async {
+    await LocalDB.getUserID().then((value) {
+      setState(() {
+        isLogIn = value.toString() != "null";
+        
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getLoggedInState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return OverlaySupport.global(
       child: MaterialApp(
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            // This is the theme of your application.
-            //
-            // Try running your application with "flutter run". You'll see the
-            // application has a blue toolbar. Then, without quitting the app, try
-            // changing the primarySwatch below to Colors.green and then invoke
-            // "hot reload" (press "r" in the console where you ran "flutter run",
-            // or simply save your changes to "hot reload" in a Flutter IDE).
-            // Notice that the counter didn't reset back to zero; the application
-            // is not restarted.
-            primarySwatch: Colors.blue,
-          ),
-          home: Question()),
+        debugShowCheckedModeBanner: false,
+        title: 'KBC Quiz',
+        theme: ThemeData(
+          primarySwatch: Colors.purple,
+        ),
+        home: isLogIn ? Home() : Login(),
+      ),
     );
   }
 }
