@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:kbc_quiz/services/localdb.dart';
 
 class Profile extends StatefulWidget {
   String name;
@@ -19,6 +21,31 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  late List<QueryDocumentSnapshot<Map<String, dynamic>>> LeaderList;
+  getLeaders() async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .orderBy("money")
+        .get()
+        .then((value) {
+      setState(() {
+        LeaderList = value.docs.toList();
+        widget.rank = (LeaderList.indexWhere(
+                    (element) => element.data()['name'] == widget.name) +
+                1)
+            .toString();
+      });
+    });
+    await LocalDB.saveRank(widget.rank);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getLeaders();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,22 +119,7 @@ class _ProfileState extends State<Profile> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Column(
-                        children: [
-                          Text(
-                            widget.level,
-                            style: TextStyle(
-                                fontSize: 42,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.white.withOpacity(0.9)),
-                          ),
-                          Text("level",
-                              style: TextStyle(
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white)),
-                        ],
-                      ),
+                     
                       Column(
                         children: [
                           Text("#${widget.rank}",
@@ -148,12 +160,12 @@ class _ProfileState extends State<Profile> {
                               children: [
                                 CircleAvatar(
                                   backgroundImage: NetworkImage(
-                                      "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=580&q=80"),
+                                      LeaderList[index].data()["photoUrl"]),
                                 ),
                                 SizedBox(
                                   width: 3,
                                 ),
-                                Text("Dhananjay Arne")
+                                Text(LeaderList[index].data()["name"].toString().length>12?"${LeaderList[index].data()["name"].toString().substring(0,13)}...":LeaderList[index].data()["name"])
                               ],
                             ),
                             leading: Text(
@@ -161,7 +173,7 @@ class _ProfileState extends State<Profile> {
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             trailing: Text(
-                                "Rs.${(200000 / (index + 1)).toString().substring(0, 5)}",
+                                "Rs.${LeaderList[index].data()["money"].toString()}",
                                 style: TextStyle(fontWeight: FontWeight.bold)),
                           );
                         },
@@ -171,12 +183,13 @@ class _ProfileState extends State<Profile> {
                               indent: 10,
                               endIndent: 10,
                             ),
-                        itemCount: 12),
+                        itemCount: LeaderList.length),
                   ),
                 ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 50),
-                  child: ElevatedButton(onPressed: () {}, child: Text("Show my position"))),
+                // Container(
+                //     margin: EdgeInsets.only(bottom: 50),
+                //     child: ElevatedButton(
+                //         onPressed: () {}, child: Text("Show my position"))),
               ],
             )
           ],

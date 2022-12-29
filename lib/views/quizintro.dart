@@ -4,6 +4,7 @@ import 'package:kbc_quiz/services/quizQuesCreator.dart';
 import 'package:kbc_quiz/views/questions.dart';
 
 import '../services/checkQuizUnlock.dart';
+import '../services/localdb.dart';
 // import 'package:kbc/services/checkQuizUnlock.dart';
 
 class QuizIntro extends StatefulWidget {
@@ -28,6 +29,18 @@ class QuizIntro extends StatefulWidget {
 }
 
 class _QuizIntroState extends State<QuizIntro> {
+  setLifeLAvail() async {
+    await LocalDB.saveAud(true);
+    await LocalDB.saveJok(true);
+    await LocalDB.save50(true);
+    await LocalDB.saveExp(true);
+    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              Question(quizID: widget.QuizId, queMoney: 1000)));
+  }
+
   bool quizIsUnlcoked = false;
   getQuizUnlockStatus() async {
     await CheckQuizUnlock.checkQuizUnlockStatus(widget.QuizId)
@@ -55,13 +68,8 @@ class _QuizIntroState extends State<QuizIntro> {
         ),
         onPressed: () async {
           quizIsUnlcoked
-              ? Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Question(
-                          quizID: widget.QuizId,
-                          queMoney:
-                              1000))) // await QuizQuesCreator.genQuizQue(widget.QuizId, 1000)
+              ? setLifeLAvail()
+                  // await QuizQuesCreator.genQuizQue(widget.QuizId, 1000)
               : buyQuiz
                   .buybuyQuiz(
                       QuizPrize: int.parse(widget.QuizPrize),

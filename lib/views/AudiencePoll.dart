@@ -31,13 +31,13 @@ class _AudiencePollState extends State<AudiencePoll> {
     votingMachine();
   }
 
-  late int opt1Votes;
-  late int opt2Votes;
-  late int opt3Votes;
-  late int opt4Votes;
+  int opt1Votes = 0;
+  int opt2Votes = 0;
+  int opt3Votes = 0;
+  int opt4Votes = 0;
   bool isVoting = true;
   votingMachine() {
-    Future.delayed(Duration(seconds: 10), () {
+    Future.delayed(Duration(seconds: 6), () {
       setState(() {
         if (widget.opt1 == widget.correctAns) {
           opt1Votes = Random().nextInt(100);
@@ -62,18 +62,21 @@ class _AudiencePollState extends State<AudiencePoll> {
         }
         isVoting = false;
       });
+      Future.delayed(Duration(seconds: 7), () {
+        Navigator.pop(context);
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.purple,
+        backgroundColor: Color.fromARGB(255, 218, 200, 212),
         body: Center(
           child: Container(
-            margin: EdgeInsets.symmetric(vertical: 250, horizontal: 20),
+            margin: EdgeInsets.symmetric(vertical: 200, horizontal: 20),
             decoration: BoxDecoration(
-                color: Colors.purpleAccent,
+                color: Color.fromARGB(255, 216, 164, 225),
                 borderRadius: BorderRadius.circular(20)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -91,8 +94,8 @@ class _AudiencePollState extends State<AudiencePoll> {
                 Text(
                   "Question - ${widget.question}",
                   style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 23,
                       color: Colors.white),
                   textAlign: TextAlign.center,
                 ),
@@ -107,11 +110,11 @@ class _AudiencePollState extends State<AudiencePoll> {
                 ),
                 SizedBox(height: 15),
                 isVoting
-                    ? Container()
-                    : Padding(
+                    ? Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 30),
                         child: LinearProgressIndicator(),
-                      ),
+                      )
+                    : Container(),
                 SizedBox(height: 15),
                 Text(
                   "${widget.opt1}\t\t${opt1Votes} voutes",

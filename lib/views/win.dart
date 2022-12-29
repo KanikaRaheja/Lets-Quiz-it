@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:kbc_quiz/services/firedb.dart';
 import 'package:kbc_quiz/views/questions.dart';
 
 class Win extends StatefulWidget {
@@ -26,6 +27,30 @@ class _WinState extends State<Win> {
     confettiController.play();
   }
 
+  Future<bool?> showWarning(
+          {required BuildContext context,
+          required String title,
+          required String content}) async =>
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text(title),
+                content: Text(content),
+                actions: [
+                  ElevatedButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: Text("No!")),
+                  ElevatedButton(
+                      onPressed: () async {
+                        await FireDB.updateMoney(widget.quesMoney == 5000
+                            ? 0
+                            : widget.quesMoney ~/ 2);
+                        Navigator.pop(context, true);
+                      },
+                      child: Text("Okay!"))
+                ],
+              ));
+
   void initController() {
     confettiController =
         ConfettiController(duration: const Duration(seconds: 1));
@@ -33,54 +58,69 @@ class _WinState extends State<Win> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage("assets/img/win.png"), fit: BoxFit.cover)),
-      child: Scaffold(
-        floatingActionButton: ElevatedButton(
-          child: Text("Share with Friends!!"),
-          onPressed: () {},
-        ),
-        backgroundColor: Colors.transparent,
-        body: Stack(
-          children: [
-            Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Congratulations!!!!",
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                  ),
-                  Text("Your answer is correct!!!",
+    return WillPopScope(
+      onWillPop: () async {
+        final exitQuiz = await showWarning(
+            context: context,
+            title: "DO YOU WANT TO EXIT QUIZ ?",
+            content: "You will get Rs.0");
+        return exitQuiz ?? false;
+      },
+      child: Container(
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage("assets/img/win.png"), fit: BoxFit.cover)),
+        child: Scaffold(
+          floatingActionButton: ElevatedButton(
+            child: Text("Share with Friends!!"),
+            onPressed: () {},
+          ),
+          backgroundColor: Colors.transparent,
+          body: Stack(
+            children: [
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Congratulations!!!!",
                       style:
-                          TextStyle(fontSize: 17, fontWeight: FontWeight.w500)),
-                  SizedBox(height: 15),
-                  Text("You won",
-                      style:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
-                  Text("Rs. ${widget.quesMoney}",
-                      style:
-                          TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(20),
-                    child: Image.asset("assets/img/cheque.png"),
-                  ),
-                  ElevatedButton(
-                    child: Text("Next Question"),
-                    onPressed: () {
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Question(quizID: widget.QuizID, queMoney: widget.quesMoney)));
-                    },
-                  )
-                ],
+                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                    ),
+                    Text("Your answer is correct!!!",
+                        style: TextStyle(
+                            fontSize: 17, fontWeight: FontWeight.w500)),
+                    SizedBox(height: 15),
+                    Text("You won",
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w400)),
+                    Text("Rs. ${widget.quesMoney}",
+                        style: TextStyle(
+                            fontSize: 35, fontWeight: FontWeight.bold)),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(20),
+                      child: Image.asset("assets/img/cheque.png"),
+                    ),
+                    ElevatedButton(
+                      child: Text("Next Question"),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Question(
+                                    quizID: widget.QuizID,
+                                    queMoney: widget.quesMoney)));
+                      },
+                    )
+                  ],
+                ),
               ),
-            ),
-            buildConfettiWidget(confettiController, pi / 2)
-          ],
+              buildConfettiWidget(confettiController, pi / 2)
+            ],
+          ),
         ),
       ),
     );
