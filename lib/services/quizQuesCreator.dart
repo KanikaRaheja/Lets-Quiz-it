@@ -16,10 +16,13 @@ class QuizQuesCreator {
         .then((value) async {
       //generetae a random no bw 0 to docs.length
       var intval = value.docs.length;
-       var interval= Random().nextInt(intval);
-      // print(interval);
+      var interval = Random().nextInt(intval);
+      print("interval =========");
+      print(intval);
       quesData = value.docs.elementAt(interval).data();
     });
+
+    
     print(quesData);
     return quesData;
   }

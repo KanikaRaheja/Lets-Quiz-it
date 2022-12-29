@@ -46,6 +46,9 @@ dependencies:
   overlay_support: ^1.2.1
   carousel_slider: ^4.0.0
   confetti: ^0.6.0
+  youtube_player_flutter: ^8.0.0
+  # flutter_webview_plugin: any  
+
 
 dev_dependencies:
   flutter_test:
